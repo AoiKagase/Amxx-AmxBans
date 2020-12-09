@@ -302,7 +302,7 @@ public client_disconnect(id)
 	else if(g_being_flagged[id])
 	{
 		// if kicked by amxbans maybe remove the flagged, not added yet
-		/*****///remove_flagged_by_steam(0,id,0)
+		/* ****///remove_flagged_by_steam(0,id,0)
 	}
 	//reset some vars
 	g_kicked_by_amxbans[id]=false
