@@ -44,24 +44,24 @@
 #include <amxmisc>
 #include <sqlx>
 #include <time>
+
+#pragma semicolon 1
 /*********************  Banmod online  ********************/
 public banmod_online(id)
 {
 	// This is a new way of getting the port number
-	new ip_port[100]
-	get_pcvar_string(pcvar_serverip,ip_port,99)
-	if(contain(ip_port,":") == -1) {
-		get_user_ip(0, ip_port, 99, 0) // Takes in the whole IP:port string.. (0 is always the server)
-	}
-	strtok(ip_port, g_ip, 90, g_port, 9, ':')
+	new ip_port[MAX_IP_PORT_LENGTH];
+	get_pcvar_string(pcvar_serverip, ip_port, charsmax(ip_port));
+	if(contain(ip_port,":") == -1)
+		get_user_ip(0, ip_port, charsmax(ip_port), 0); // Takes in the whole IP:port string.. (0 is always the server)
 
 	if ( get_pcvar_num(pcvar_debug) >= 1 )
 	{
-		server_print("[AMXBans] The server IP:PORT is: %s:%s", g_ip, g_port)
-		log_amx("[AMXBans] The server IP:PORT is: %s:%s", g_ip, g_port)
+		server_print("[AMXBans] The server IP:PORT is: %s", ip_port);
+		log_amx("[AMXBans] The server IP:PORT is: %s", ip_port);
 	}
-	new pquery[1024]
-	formatex(pquery, charsmax(pquery), "SELECT `motd_delay` FROM `%s%s` WHERE address = '%s:%s'", g_dbPrefix, tbl_serverinfo,g_ip,g_port)
+	new pquery[1024];
+	formatex(pquery, charsmax(pquery), "SELECT `motd_delay` FROM `%s%s` WHERE address = '%s'", g_dbPrefix, tbl_serverinfo, ip_port)
 	
 	new data[1]
 	data[0] = id
@@ -90,12 +90,12 @@ public banmod_online_(failstate, Handle:query, error[], errnum, data[], size)
 	
 	if (!SQL_NumResults(query)) {
 		if ( get_pcvar_num(pcvar_debug) >= 1 ) {
-			server_print("[AMXBans] INSERT INTO `%s%s` VALUES ('', %i,'%s', '%s:%s', '%s', '', '%s', '', '', '0')", g_dbPrefix, tbl_serverinfo, timestamp, servername, g_ip, g_port, modname, PLUGINVERSION)
-			log_amx("[AMXBans] INSERT INTO `%s%s` VALUES ('', %i,'%s', '%s:%s', '%s', '', '%s', '', '', '0')", g_dbPrefix, tbl_serverinfo, timestamp, servername, g_ip, g_port, modname, PLUGINVERSION)
+			server_print("[AMXBans] INSERT INTO `%s%s` VALUES ('', %i,'%s', '%s', '%s', '', '%s', '', '', '0')", g_dbPrefix, tbl_serverinfo, timestamp, servername, g_ip_port, modname, PLUGINVERSION)
+			log_amx("[AMXBans] INSERT INTO `%s%s` VALUES ('', %i,'%s', '%s', '%s', '', '%s', '', '', '0')", g_dbPrefix, tbl_serverinfo, timestamp, servername, g_ip_port, modname, PLUGINVERSION)
 		}
 		
 		formatex(pquery, charsmax(pquery),"INSERT INTO `%s%s` (timestamp, hostname, address, gametype, amxban_version, amxban_menu) VALUES \
-			(%i, '%s', '%s:%s', '%s', '%s', 1)", g_dbPrefix, tbl_serverinfo, timestamp, servername, g_ip, g_port, modname, PLUGINVERSION)
+			(%i, '%s', '%s', '%s', '%s', 1)", g_dbPrefix, tbl_serverinfo, timestamp, servername, g_ip_port, modname, PLUGINVERSION)
 	} else {
 		new kick_delay_str[10]
 		SQL_ReadResult(query, 0, kick_delay_str, 9)
@@ -107,15 +107,15 @@ public banmod_online_(failstate, Handle:query, error[], errnum, data[], size)
 		}
 
 		if ( get_pcvar_num(pcvar_debug) >= 1 ) {
-			server_print("AMXBANS DEBUG] UPDATE `%s%s` SET timestamp=%i,hostname='%s',gametype='%s',amxban_version='%s', amxban_menu=1 WHERE address = '%s:%s'", g_dbPrefix, tbl_serverinfo, timestamp, servername, modname, PLUGINVERSION, g_ip, g_port)
-			log_amx("[AMXBANS DEBUG] UPDATE `%s%s` SET timestamp=%i,hostname='%s',gametype='%s',amxban_version='%s', amxban_menu=1 WHERE address = '%s:%s'", g_dbPrefix, tbl_serverinfo, timestamp, servername, modname, PLUGINVERSION, g_ip, g_port)
+			server_print("AMXBANS DEBUG] UPDATE `%s%s` SET timestamp=%i,hostname='%s',gametype='%s',amxban_version='%s', amxban_menu=1 WHERE address = '%s'", g_dbPrefix, tbl_serverinfo, timestamp, servername, modname, PLUGINVERSION, g_ip_port)
+			log_amx("[AMXBANS DEBUG] UPDATE `%s%s` SET timestamp=%i,hostname='%s',gametype='%s',amxban_version='%s', amxban_menu=1 WHERE address = '%s'", g_dbPrefix, tbl_serverinfo, timestamp, servername, modname, PLUGINVERSION, g_ip_port)
 		}
-		formatex(pquery, charsmax(pquery), "UPDATE `%s%s` SET timestamp='%i',hostname='%s',gametype='%s',amxban_version='%s', amxban_menu='1' WHERE address = '%s:%s'", g_dbPrefix, tbl_serverinfo, timestamp, servername, modname, PLUGINVERSION, g_ip, g_port)
+		formatex(pquery, charsmax(pquery), "UPDATE `%s%s` SET timestamp='%i',hostname='%s',gametype='%s',amxban_version='%s', amxban_menu='1' WHERE address = '%s'", g_dbPrefix, tbl_serverinfo, timestamp, servername, modname, PLUGINVERSION, g_ip_port)
 	
 	}
 	new data[1]
 
-	//formatex(pquery, charsmax(pquery), "UPDATE `%s%s` SET timestamp='%i',hostname='%s',gametype='%s',amxban_version='%s', amxban_menu='1' WHERE address = '%s:%s'", g_dbPrefix, tbl_serverinfo, timestamp, servername, modname, PLUGINVERSION, g_ip, g_port)
+	//formatex(pquery, charsmax(pquery), "UPDATE `%s%s` SET timestamp='%i',hostname='%s',gametype='%s',amxban_version='%s', amxban_menu='1' WHERE address = '%s'", g_dbPrefix, tbl_serverinfo, timestamp, servername, modname, PLUGINVERSION, g_ip_port)
 
 	data[0] = id
 
@@ -156,8 +156,8 @@ public cmdFetchReasons(id,level,cid) {
 public fetchReasons(id) {
 	new data[1], pquery[1024]
 	formatex(pquery, charsmax(pquery), "SELECT re.reason,re.static_bantime FROM %s%s as re,%s%s as rs ,%s%s as si \
-				WHERE si.address = '%s:%s' AND si.reasons = rs.setid and rs.reasonid = re.id \
-				ORDER BY re.id", g_dbPrefix, tbl_reasons, g_dbPrefix, tbl_reasons_to_set, g_dbPrefix, tbl_serverinfo, g_ip,g_port)
+				WHERE si.address = '%s' AND si.reasons = rs.setid and rs.reasonid = re.id \
+				ORDER BY re.id", g_dbPrefix, tbl_reasons, g_dbPrefix, tbl_reasons_to_set, g_dbPrefix, tbl_serverinfo, g_ip_port)
 	
 	data[0] = id
 	SQL_ThreadQuery(g_SqlX, "fetchReasons_", pquery, data, 1)

@@ -54,9 +54,9 @@ public prebanned_check(id) {
 	if(get_user_flags(id) & ADMIN_IMMUNITY)
 		return PLUGIN_HANDLED
 	
-	new player_steamid[35], player_ip[22], pquery[1024]
-	get_user_authid(id, player_steamid, 34)
-	get_user_ip(id, player_ip, 21, 1)
+	new player_steamid[MAX_AUTHID_LENGTH], player_ip[MAX_IP_PORT_LENGTH], pquery[1024]
+	get_user_authid(id, player_steamid, charsmax(player_steamid))
+	get_user_ip(id, player_ip, charsmax(player_ip), 1)
 
 	//formatex(pquery, charsmax(pquery), "SELECT ban_created,admin_nick FROM `%s%s` WHERE ( (player_id='%s' AND ban_type='S') OR (player_ip='%s' AND ban_type='SI') ) AND expired=1",g_dbPrefix, tbl_bans, player_steamid, player_ip)
 	formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE ( (player_id='%s' AND ban_type='S') OR (player_ip='%s' AND ban_type='SI') ) AND expired=1",g_dbPrefix, tbl_bans, player_steamid, player_ip)
@@ -81,9 +81,9 @@ public prebanned_check_(failstate, Handle:query, error[], errnum, data[], size) 
 	if(ban_count < get_pcvar_num(pcvar_show_prebanned_num))
 		return PLUGIN_HANDLED
 		
-	new name[32], player_steamid[35]
-	get_user_authid(id, player_steamid, 34)
-	get_user_name(id, name, 31)
+	new name[MAX_NAME_LENGTH], player_steamid[MAX_AUTH_LENGTH]
+	get_user_authid(id, player_steamid, charsmax(player_steamid))
+	get_user_name(id, name, charsmax(name))
 	
 	new pnum=get_maxplayers()
 	for(new i=1;i<=pnum;i++) {
@@ -100,9 +100,9 @@ public prebanned_check_(failstate, Handle:query, error[], errnum, data[], size) 
 /*************************************************************************/
 
 public check_player(id) {
-	new player_steamid[32], player_ip[20]
-	get_user_authid(id, player_steamid, 31)
-	get_user_ip(id, player_ip, 19, 1)
+	new player_steamid[MAX_AUTHID_LENGTH], player_ip[MAX_IP_PORT_LENGTH]
+	get_user_authid(id, player_steamid, charsmax(player_steamid))
+	get_user_ip(id, player_ip, charsmax(player_ip), 1)
 
 	new data[1], pquery[1024]
 	formatex(pquery, charsmax(pquery), "SELECT bid,ban_created,ban_length,ban_reason,admin_nick,admin_id,admin_ip,player_nick,player_id,player_ip,server_name,server_ip,ban_type \

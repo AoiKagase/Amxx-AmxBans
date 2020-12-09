@@ -35,18 +35,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 //db table defines, no need to change something
-new const tbl_serverinfo[] = "_serverinfo";
-new const tbl_reasons[] = "_reasons";
-new const tbl_reasons_to_set[] = "_reasons_to_set";
-new const tbl_bans[] = "_bans";
-new const tbl_bans_edit[] = "_bans_edit";
-new const tbl_flagged[] = "_flagged";
+new const TBL_SERVERINFO	[] = "_serverinfo";
+new const TBL_REASONS		[] = "_reasons";
+new const TBL_REASONS_TO_SET[] = "_reasons_to_set";
+new const TBL_BANS			[] = "_bans";
+new const TBL_BANS_EDIT		[] = "_bans_edit";
+new const TBL_FLAGGED		[] = "_flagged";
 
 // global
-new g_ip[32];
-new g_port[10];
-new bool:g_kicked_by_amxbans[33];
-new bool:g_being_banned[33];
+new g_ip_port				[MAX_IP_PORT_LENGTH];
+new bool:g_kicked_by_amxbans[MAX_PLAYERS + 1];
+new bool:g_being_banned		[MAX_PLAYERS + 1];
+
 new bool:g_supported_game = true;
 
 //forwards
@@ -91,7 +91,7 @@ new bool:g_being_flagged[33];
 new g_flaggedReason[33][128];
 new g_flaggedTime[33];
 
-/*****************************/
+/* *************************** */
 
 // pcvars
 
@@ -113,7 +113,7 @@ new pcvar_show_prebanned_num;
 new pcvar_default_banreason;
 new pcvar_prefix;
 
-/*****************************/
+/* *************************** */
 
 // SQL
 

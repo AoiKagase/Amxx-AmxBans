@@ -221,9 +221,9 @@ FlagPlayer(id) {
 	
 	formatex(pquery, charsmax(pquery), "INSERT INTO `%s%s` (`player_ip`,`player_id`,`player_nick`,\
 		`admin_ip`,`admin_id`,`admin_nick`,`reason`,`created`,`length`,`server_ip`) VALUES \
-		('%s','%s','%s','%s','%s','%s','%s',UNIX_TIMESTAMP(NOW()),'%d','%s:%s')",g_dbPrefix, tbl_flagged, \
+		('%s','%s','%s','%s','%s','%s','%s',UNIX_TIMESTAMP(NOW()),'%d','%s')",g_dbPrefix, tbl_flagged, \
 		g_choicePlayerIp[id],g_choicePlayerAuthid[id],pname,aip,aauthid,anick,\
-		g_choiceReason[id],g_choiceTime[id],g_ip,g_port)
+		g_choiceReason[id],g_choiceTime[id],g_ip_port)
 	
 	new data[2]
 	data[0] = id
@@ -244,7 +244,7 @@ UnflagPlayer(id,announce=0) {
 		g_choicePlayerAuthid[id],g_choicePlayerIp[id])
 	
 	if(!get_pcvar_num(pcvar_flagged_all))
-		format(pquery, charsmax(pquery),"%s AND `server_ip`='%s:%s'",pquery,g_ip,g_port)
+		format(pquery, charsmax(pquery),"%s AND `server_ip`='%s'",pquery,g_ip_port)
 	
 	
 	new data[2]

@@ -34,21 +34,21 @@
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#define PLUGINNAME "AMXBans Core"
-#define PLUGINAUTHOR "YamiKaitou"
-new const PLUGINVERSION[] = "6.13";
+#define 	PLUGINNAME 		"AMXBans Core"
+#define 	PLUGINAUTHOR 	"YamiKaitou, Aoi.Kagase"
+new const 	PLUGINVERSION[] = "7.00";
 
 #include <amxmodx>
 #include <amxmisc>
 #include <sqlx>
-
+#pragma semicoron 1
 new AdminCount;
 
-#define ADMIN_LOOKUP	(1<<0)
-#define ADMIN_NORMAL	(1<<1)
-#define ADMIN_STEAM		(1<<2)
-#define ADMIN_IPADDR	(1<<3)
-#define ADMIN_NAME		(1<<4)
+#define		ADMIN_LOOKUP	(1<<0)
+#define 	ADMIN_NORMAL	(1<<1)
+#define 	ADMIN_STEAM		(1<<2)
+#define 	ADMIN_IPADDR	(1<<3)
+#define 	ADMIN_NAME		(1<<4)
 
 new g_cmdLoopback[16]
 new bool:g_CaseSensitiveName[33];
@@ -629,10 +629,10 @@ accessUser(id, name[] = "")
 {
 	remove_user_flags(id)
 	
-	new userip[32], userauthid[32], password[32], passfield[32], username[32]
+	new userip[MAX_IP_PORT_LENGTH], userauthid[MAX_AUTHID_LENGTH], password[32], passfield[32], username[MAX_NAME_LENGTH]
 	
-	get_user_ip(id, userip, 31, 1)
-	get_user_authid(id, userauthid, 31)
+	get_user_ip(id, userip, charsmax(userip), 1)
+	get_user_authid(id, userauthid, charsmax(userauthid))
 	
 	if (name[0])
 	{

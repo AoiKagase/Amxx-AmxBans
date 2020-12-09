@@ -104,7 +104,7 @@ public _cmdMenuBan(failstate, Handle:query, error[], errnum, data[], size)
 		return PLUGIN_HANDLED
 	}
 	
-	new admin_nick[64], admin_steamid[35], admin_ip[22]
+	new admin_nick[64], admin_steamid[MAX_AUTHID_LENGTH], admin_ip[MAX_IP_PORT_LENGTH]
 	mysql_get_username_safe(id, admin_nick, charsmax(admin_nick))
 	get_user_ip(id, admin_ip, charsmax(admin_ip), 1)
 	get_user_authid(id, admin_steamid, charsmax(admin_steamid))
@@ -125,8 +125,8 @@ public _cmdMenuBan(failstate, Handle:query, error[], errnum, data[], size)
 	
 	new pquery[1024]
 	formatex(pquery, charsmax(pquery), "INSERT INTO `%s%s` (player_id,player_ip,player_nick,admin_ip,admin_id,admin_nick,ban_type,ban_reason,ban_created,ban_length,server_name,server_ip,expired) \
-			VALUES('%s','%s','%s','%s','%s','%s','%s','%s',UNIX_TIMESTAMP(NOW()),%d,'%s','%s:%s',0)", \
-			g_dbPrefix, tbl_bans, g_choicePlayerAuthid[id],g_choicePlayerIp[id],player_nick,admin_ip,admin_steamid,admin_nick,g_ban_type[id],g_choiceReason[id],g_choiceTime[id],servername_safe,g_ip,g_port)
+			VALUES('%s','%s','%s','%s','%s','%s','%s','%s',UNIX_TIMESTAMP(NOW()),%d,'%s','%s',0)", \
+			g_dbPrefix, tbl_bans, g_choicePlayerAuthid[id],g_choicePlayerIp[id],player_nick,admin_ip,admin_steamid,admin_nick,g_ban_type[id],g_choiceReason[id],g_choiceTime[id],servername_safe,g_ip_port)
 	
 	
 	new data[3]
@@ -224,8 +224,8 @@ public cmdBan(id, level, cid)
 
 	if (g_choicePlayerId[id])
 	{
-		get_user_authid(g_choicePlayerId[id], g_choicePlayerAuthid[id], 49)
-		get_user_ip(g_choicePlayerId[id], g_choicePlayerIp[id], 29, 1)
+		get_user_authid(g_choicePlayerId[id], g_choicePlayerAuthid[id], charsmax(g_choicePlayerAuthid[]))
+		get_user_ip(g_choicePlayerId[id], g_choicePlayerIp[id], charsmax(g_choicePlayerIp[]), 1)
 	}
 	else
 	{
@@ -321,7 +321,7 @@ public cmd_ban_(failstate, Handle:query, error[], errnum, data[], size)
 			
 			if (!serverCmd)
 			{
-				get_user_authid(id, admin_steamid, 49)
+				get_user_authid(id, admin_steamid, charsmax(admin_steamid))
 	
 				if ( get_pcvar_num(pcvar_debug) >= 1 )
 					log_amx("[AMXBans cmdBan] Adminsteamid: %s, Servercmd: %s", admin_steamid, (serverCmd)?"Yes":"No")
@@ -367,9 +367,9 @@ public cmd_ban_(failstate, Handle:query, error[], errnum, data[], size)
 			new pquery[1024]
 			format(pquery, charsmax(pquery), "INSERT INTO `%s%s` \
 				(player_id,player_ip,player_nick,admin_ip,admin_id,admin_nick,ban_type,ban_reason,ban_created,ban_length,server_name,server_ip,expired) \
-				VALUES('%s','%s','%s','%s','%s','%s','%s','%s',UNIX_TIMESTAMP(NOW()),%d,'%s','%s:%s',0)", \
+				VALUES('%s','%s','%s','%s','%s','%s','%s','%s',UNIX_TIMESTAMP(NOW()),%d,'%s','%s',0)", \
 				g_dbPrefix, tbl_bans, g_choicePlayerAuthid[id], g_choicePlayerIp[id], player_nick, admin_ip, admin_steamid, admin_nick, g_ban_type[id], \
-				g_choiceReason[id], g_choiceTime[id], server_name, g_ip, g_port)
+				g_choiceReason[id], g_choiceTime[id], server_name, g_ip_port)
 		
 			new data[3]
 			data[0] = id
@@ -432,7 +432,7 @@ public select_amxbans_motd(id,player,bid) {
 	new pquery[1024]
 	format(pquery, charsmax(pquery), "SELECT si.amxban_motd,ba.player_nick,ba.player_id,ba.player_ip, \
 		ba.admin_nick,ba.admin_id,ba.ban_type,ba.ban_reason,ba.ban_length FROM `%s%s` as si,`%s%s` as ba \
-		WHERE ba.bid=%d AND si.address = '%s:%s'", g_dbPrefix, tbl_serverinfo, g_dbPrefix, tbl_bans, bid,g_ip, g_port)
+		WHERE ba.bid=%d AND si.address = '%s'", g_dbPrefix, tbl_serverinfo, g_dbPrefix, tbl_bans, bid,g_ip_port)
 
 	
 	new data[4]
@@ -491,7 +491,7 @@ public _select_amxbans_motd(failstate, Handle:query, error[], errnum, data[], si
 	
 	new admin_team[11]
 	
-	get_user_team(id, admin_team, 10)
+	get_user_team(id, admin_team, charsmax(admin_team))
 	//get_user_authid(id, admin_steamid, charsmax(admin_steamid))
 	//mysql_get_username_safe(id,admin_nick,charsmax(admin_nick))
 	
@@ -499,8 +499,8 @@ public _select_amxbans_motd(failstate, Handle:query, error[], errnum, data[], si
 	new cTimeLengthServer[128]
 		
 	if (iBanLength > 0) {
-		get_time_length(player, iBanLength, timeunit_minutes, cTimeLengthPlayer, 127)
-		get_time_length(0, iBanLength, timeunit_minutes, cTimeLengthServer, 127)
+		get_time_length(player, iBanLength, timeunit_minutes, cTimeLengthPlayer, charsmax(cTimeLengthPlayer))
+		get_time_length(0, iBanLength, timeunit_minutes, cTimeLengthServer, charsmax(cTimeLengthServer))
 	} else { //Permanent Ban
 		format(cTimeLengthPlayer, 127, "%L", player, "TIME_ELEMENT_PERMANENTLY")
 		format(cTimeLengthServer, 127, "%L", LANG_SERVER, "TIME_ELEMENT_PERMANENTLY")
@@ -512,7 +512,7 @@ public _select_amxbans_motd(failstate, Handle:query, error[], errnum, data[], si
 	
 	if (player) {
 		new complain_url[256]
-		get_pcvar_string(pcvar_complainurl ,complain_url, 255)
+		get_pcvar_string(pcvar_complainurl ,complain_url, charsmax(complain_url))
 			
 		client_print(player,print_console,"[AMXBans] ===============================================")
 		

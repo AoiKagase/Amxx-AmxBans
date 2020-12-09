@@ -69,7 +69,7 @@ public actionHistoryMenu(id,menu,item) {
 	menu_destroy(menu)
 	
 	new pquery[1024]
-	format(pquery, charsmax(pquery), "SELECT amxban_motd FROM `%s%s` WHERE address = '%s:%s'", g_dbPrefix, tbl_serverinfo, g_ip, g_port)
+	format(pquery, charsmax(pquery), "SELECT amxban_motd FROM `%s%s` WHERE address = '%s'", g_dbPrefix, tbl_serverinfo, g_ip_port)
 	
 	new data[4]
 	data[0] = id

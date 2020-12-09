@@ -49,7 +49,7 @@ new const PLUGINVERSION[] = "6.13";
 #include "include/amxbans_main.inc"
 //#include "amxbans/color_chat.inl"
 
-new authid[33][35],ip[33][22],reason[33][100]//,Float:left[33]
+new authid[33][MAX_AUTHID_LENGTH],ip[33][MAX_IP_PORT_LENGTH],reason[33][100]//,Float:left[33]
 new flagged_end[33]
 new g_maxplayers
 
@@ -68,9 +68,9 @@ public amxbans_player_flagged(id,sec_left,reas[]) {
 		flagged_end[id]=-1 //permanent
 	}
 	
-	get_user_authid(id,authid[id],sizeof(authid[]))
-	get_user_ip(id,ip[id],sizeof(ip[]))
-	copy(reason[id],sizeof(reason[]),reas)
+	get_user_authid(id,authid[id],charsmax(authid[]))
+	get_user_ip(id,ip[id],charsmax(ip[]))
+	copy(reason[id],charsmax(reason[]),reas)
 	
 	set_task(10.0,"announce",id)
 	return PLUGIN_HANDLED
@@ -79,8 +79,8 @@ public amxbans_player_unflagged(id) {
 	if(task_exists(id)) remove_task(id)
 }
 public announce(id) {
-	new name[32],left_str[32]
-	get_user_name(id,name,sizeof(name))
+	new name[MAX_NAME_LENGTH],left_str[32]
+	get_user_name(id, name, charsmax(name))
 	
 	if(flagged_end[id]==-1) {
 		formatex(left_str,charsmax(left_str)," ^x04(%L)^x01",LANG_PLAYER,"PERMANENT")
