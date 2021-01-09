@@ -141,10 +141,10 @@ public plugin_init()
 	g_AdminNick=ArrayCreate(32,32);
 	g_AdminUseStaticBantime=ArrayCreate(1,32);
 //
-	bind_pcvar_string	(create_cvar("amxbans_sql_host", 		"127.0.0.1"),	g_dbConfig[DB_HOST], 	charsmax(g_dbConfig[]));
-	bind_pcvar_string	(create_cvar("amxbans_sql_user", 		"root"),		g_dbConfig[DB_USER], 	charsmax(g_dbConfig[]));
+	bind_pcvar_string	(create_cvar("amxbans_sql_host", 		""),			g_dbConfig[DB_HOST], 	charsmax(g_dbConfig[]));
+	bind_pcvar_string	(create_cvar("amxbans_sql_user", 		""),			g_dbConfig[DB_USER], 	charsmax(g_dbConfig[]));
 	bind_pcvar_string	(create_cvar("amxbans_sql_pass", 		""),			g_dbConfig[DB_PASS], 	charsmax(g_dbConfig[]));
-	bind_pcvar_string	(create_cvar("amxbans_sql_db", 			"amxbans"),		g_dbConfig[DB_NAME], 	charsmax(g_dbConfig[]));
+	bind_pcvar_string	(create_cvar("amxbans_sql_db", 			""),			g_dbConfig[DB_NAME], 	charsmax(g_dbConfig[]));
 	bind_pcvar_string	(create_cvar("amxbans_sql_type", 		"mysql"),		g_dbConfig[DB_TYPE], 	charsmax(g_dbConfig[]));
 	bind_pcvar_string	(create_cvar("amxbans_sql_prefix", 		"amxbans"),		g_dbConfig[DB_PREFIX], 	charsmax(g_dbConfig[]));
 	// bind_pcvar_string	(create_cvar("amxbans_sql_table", 		"admins"),		g_dbConfig[DB_TABLE],	charsmax(g_dbConfig[]));
@@ -160,10 +160,12 @@ public plugin_init()
 
 	new configsDir[64];
 	get_configsdir(configsDir, 63);
-	
-	server_cmd("exec %s/amxx.cfg", configsDir);	// Execute main configuration file
-	server_cmd("exec %s/sql.cfg", configsDir);
+
+	server_cmd("exec %s/amxx.cfg",	configsDir);	// Execute main configuration file
+	server_cmd("exec %s/sql.cfg", 	configsDir);
+	AutoExecConfig(true, "amxbans");
 	//server_cmd("exec %s/amxbans.cfg", configsDir)
+
 
 }
 
@@ -181,8 +183,8 @@ public plugin_cfg()
 
 create_forwards()
 {
-	MFHandle[Admin_Connect]=CreateMultiForward("amxbans_admin_connect",ET_IGNORE,FP_CELL);
-	MFHandle[Admin_Disconnect]=CreateMultiForward("amxbans_admin_disconnect",ET_IGNORE,FP_CELL);
+	MFHandle[Admin_Connect]		=CreateMultiForward("amxbans_admin_connect",	ET_IGNORE, FP_CELL);
+	MFHandle[Admin_Disconnect]	=CreateMultiForward("amxbans_admin_disconnect",	ET_IGNORE, FP_CELL);
 }
 
 public delayed_plugin_cfg()
@@ -217,7 +219,7 @@ public delayed_plugin_cfg()
 	if(get_cvar_num("amxbans_debug") >= 1) 
 		server_print("[AMXBans] plugin_cfg: ip %s / prefix %s", g_ServerAddr, g_dbConfig[DB_PREFIX]);
 	
-	server_cmd("amx_sqladmins");
+	adminSql();
 	server_exec();
 
 	set_task(6.1, "delayed_load");
@@ -410,7 +412,7 @@ public adminSql()
 			trim(Access);
 			if(equal(Access,"")) SQL_ReadResult(query, qcolAccess, Access, sizeof(Access)-1);
 			
-			admins_push(AuthData,Password,read_flags(Access),read_flags(Flags));
+			admins_push(AuthData, Password, read_flags(Access), read_flags(Flags));
 			
 			//save nick
 			ArrayPushString(g_AdminNick,Nick);

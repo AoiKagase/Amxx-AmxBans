@@ -98,24 +98,29 @@ public plugin_init()
 	
 	register_concmd("amx_reloadreasons", "cmdFetchReasons", ADMIN_CFG)
 	
-	pcvar_serverip		=	register_cvar("amxbans_server_address","")
-	pcvar_server_nick 	= 	register_cvar("amxbans_servernick", "")
-	pcvar_discon_in_banlist	=	register_cvar("amxbans_discon_players_saved","10")
-	pcvar_complainurl	= 	register_cvar("amxbans_complain_url", "www.yoursite.com") // Dont use http:// then the url will not show
-	pcvar_debug 		= 	register_cvar("amxbans_debug", "0") // Set this to 1 to enable debug
-	pcvar_add_mapname	=	register_cvar("amxbans_add_mapname_in_servername", "0")
-	pcvar_flagged_all	=	register_cvar("amxbans_flagged_all_server","1")
-	pcvar_show_in_hlsw 	= 	register_cvar("amxbans_show_in_hlsw", "1")
-	pcvar_show_hud_messages	= 	register_cvar("amxbans_show_hud_messages", "1")
+	pcvar_serverip				=	register_cvar("amxbans_server_address","")
+	pcvar_server_nick 			= 	register_cvar("amxbans_servernick", "")
+	pcvar_discon_in_banlist		=	register_cvar("amxbans_discon_players_saved","10")
+	pcvar_complainurl			= 	register_cvar("amxbans_complain_url", "www.yoursite.com") // Dont use http:// then the url will not show
+	pcvar_debug 				= 	register_cvar("amxbans_debug", "0") // Set this to 1 to enable debug
+	pcvar_add_mapname			=	register_cvar("amxbans_add_mapname_in_servername", "0")
+	pcvar_flagged_all			=	register_cvar("amxbans_flagged_all_server","1")
+	pcvar_show_in_hlsw 			= 	register_cvar("amxbans_show_in_hlsw", "1")
+	pcvar_show_hud_messages		= 	register_cvar("amxbans_show_hud_messages", "1")
 	pcvar_higher_ban_time_admin = 	register_cvar("amxbans_higher_ban_time_admin", "n")
-	pcvar_admin_mole_access = 	register_cvar("amxbans_admin_mole_access", "r")
+	pcvar_admin_mole_access 	= 	register_cvar("amxbans_admin_mole_access", "r")
 	pcvar_show_name_evenif_mole = 	register_cvar("amxbans_show_name_evenif_mole", "1")
-	pcvar_custom_statictime =	register_cvar("amxbans_custom_statictime","1440")
-	pcvar_show_prebanned 	=	register_cvar("amxbans_show_prebanned","1")
-	pcvar_show_prebanned_num =	register_cvar("amxbans_show_prebanned_num","2")
-	pcvar_default_banreason	=	register_cvar("amxbans_default_ban_reason","unknown")
-	pcvar_prefix = get_cvar_pointer("amx_sql_prefix");
+	pcvar_custom_statictime 	=	register_cvar("amxbans_custom_statictime","1440")
+	pcvar_show_prebanned 		=	register_cvar("amxbans_show_prebanned","1")
+	pcvar_show_prebanned_num	=	register_cvar("amxbans_show_prebanned_num","2")
+	pcvar_default_banreason		=	register_cvar("amxbans_default_ban_reason","unknown")
 	
+	bind_pcvar_string	(create_cvar("amxbans_sql_host", 		"127.0.0.1"),	g_dbConfig[DB_HOST], 	charsmax(g_dbConfig[]));
+	bind_pcvar_string	(create_cvar("amxbans_sql_user", 		"root"),		g_dbConfig[DB_USER], 	charsmax(g_dbConfig[]));
+	bind_pcvar_string	(create_cvar("amxbans_sql_pass", 		""),			g_dbConfig[DB_PASS], 	charsmax(g_dbConfig[]));
+	bind_pcvar_string	(create_cvar("amxbans_sql_db", 			"amxbans"),		g_dbConfig[DB_NAME], 	charsmax(g_dbConfig[]));
+	bind_pcvar_string	(create_cvar("amxbans_sql_prefix", 		"amxbans"),		g_dbConfig[DB_PREFIX], 	charsmax(g_dbConfig[]));
+
 	register_concmd("amx_ban", "cmdBan", ADMIN_BAN, "<steamID or nickname or #authid or IP> <time in mins> <reason>")
 	register_srvcmd("amx_ban", "cmdBan", -1, "<steamID or nickname or #authid or IP> <time in mins> <reason>")
 	register_concmd("amx_banip", "cmdBan", ADMIN_BAN, "<steamID or nickname or #authid or IP> <time in mins> <reason>")
@@ -173,7 +178,12 @@ public sql_init()
 	new error[128], errno;
 	
 	SQL_SetAffinity("mysql")
-	g_SqlX = SQL_MakeStdTuple()
+	g_SqlX = SQL_MakeTuple(
+		g_dbConfig[DB_HOST],
+		g_dbConfig[DB_USER],
+		g_dbConfig[DB_PASS],
+		g_dbConfig[DB_NAME],
+	);
 	new Handle:temp = SQL_Connect(g_SqlX, errno, error, 127)
 	
 	if(temp==Empty_Handle)
