@@ -29,7 +29,7 @@ enum Color
 	GREY, // grey
 	RED, // Red
 	BLUE, // Blue
-}
+};
 
 new TeamInfo;
 new SayText;
@@ -41,7 +41,7 @@ new TeamName[][] =
 	"TERRORIST",
 	"CT",
 	"SPECTATOR"
-}
+};
 
 
 public color_chat_init()

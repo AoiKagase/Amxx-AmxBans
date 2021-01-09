@@ -33,7 +33,9 @@
  *  version.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
+#define MAX_ERR_LENGTH			512
+#define MAX_QUERY_LENGTH		2048
+#define MAX_LENGTH				32
 //db table defines, no need to change something
 new const TBL_SERVERINFO	[] = "_serverinfo";
 new const TBL_REASONS		[] = "_reasons";
@@ -43,11 +45,24 @@ new const TBL_BANS_EDIT		[] = "_bans_edit";
 new const TBL_FLAGGED		[] = "_flagged";
 
 // global
-new g_ip_port				[MAX_IP_PORT_LENGTH];
+new g_ip_port				[MAX_IP_WITH_PORT_LENGTH];
+new g_server_ip_port		[MAX_IP_WITH_PORT_LENGTH];
 new bool:g_kicked_by_amxbans[MAX_PLAYERS + 1];
 new bool:g_being_banned		[MAX_PLAYERS + 1];
 
 new bool:g_supported_game = true;
+
+enum DB_CONFIG
+{
+	DB_HOST = 0,
+	DB_USER,
+	DB_PASS,
+	DB_NAME,
+	DB_TYPE,
+	DB_PREFIX,
+	// DB_TABLE,
+}
+new g_dbConfig[DB_CONFIG][MAX_LENGTH];
 
 //forwards
 enum MFHandles
@@ -55,7 +70,7 @@ enum MFHandles
 	Ban_MotdOpen,
 	Player_Flagged,
 	Player_UnFlagged
-}
+};
 
 new MFHandle[MFHandles];
 
@@ -95,7 +110,7 @@ new g_flaggedTime[33];
 
 // pcvars
 
-new pcvar_serverip;
+// new pcvar_serverip;
 new pcvar_server_nick;
 new pcvar_discon_in_banlist;
 new pcvar_complainurl;

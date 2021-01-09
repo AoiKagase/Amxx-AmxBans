@@ -59,7 +59,7 @@ public cmdUnban(id, level, cid)
 	new pquery[512];
 	formatex(pquery, charsmax(pquery), "SELECT * FROM `%s%s` \
 	WHERE (`player_id` = '%s' OR `player_ip` = '%s') AND `expired` = 0", \
-	g_dbPrefix, tbl_bans, authid, authip);
+	g_dbPrefix, TBL_BANS, authid, authip);
 	
 	new data[2];
 	data[0] = id;
@@ -103,7 +103,7 @@ public cmd_unban_1(failstate, Handle:query, error[], errnum, data[], size)
 			formatex(pquery, charsmax(pquery), "INSERT INTO `%s%s` \
 			(`id`, `bid`, `edit_time`, `admin_nick`, `edit_reason`) \
 			VALUES ('', '%d', UNIX_TIMESTAMP(NOW()), '%s', 'Unbanned in-game')", \
-			g_dbPrefix, tbl_bans_edit, banid, admin_nick);
+			g_dbPrefix, TBL_BANS_EDIT, banid, admin_nick);
 			
 			data[1] = banid;
 			
@@ -142,7 +142,7 @@ public cmd_unban_2(failstate, Handle:query, error[], errnum, data[], size)
 		formatex(pquery, charsmax(pquery), "UPDATE `%s%s` \
 		SET `ban_length` = '-1', `expired` = '1' \
 		WHERE `bid` = %d", \
-		g_dbPrefix, tbl_bans, banid);
+		g_dbPrefix, TBL_BANS, banid);
 		
 		SQL_ThreadQuery(g_SqlX, "cmd_unban_3", pquery, data, 2);
 	}

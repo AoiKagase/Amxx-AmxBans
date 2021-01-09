@@ -50,14 +50,14 @@ check_flagged(id)
 	if(g_being_flagged[id])
 		return PLUGIN_HANDLED;
 	
-	new authid[MAX_AUTHID_LENGTH], ip[MAX_IP_PORT_LENGTH], pquery[1024];
+	new authid[MAX_AUTHID_LENGTH], ip[MAX_IP_WITH_PORT_LENGTH], pquery[1024];
 	get_user_authid(id, authid, charsmax(authid));
 	get_user_ip(id, ip, charsmax(ip), 1);
 	
 	if(get_pcvar_num(pcvar_flagged_all))
-		formatex(pquery, charsmax(pquery), "SELECT `fid`,`reason`,`created`,`length` FROM `%s%s` WHERE player_id='%s' OR player_ip='%s' ORDER BY `length` ASC", g_dbPrefix, tbl_flagged, authid, ip);
+		formatex(pquery, charsmax(pquery), "SELECT `fid`,`reason`,`created`,`length` FROM `%s%s` WHERE player_id='%s' OR player_ip='%s' ORDER BY `length` ASC", g_dbPrefix, TBL_FLAGGED, authid, ip);
 	else
-		formatex(pquery, charsmax(pquery), "SELECT `fid`,`reason`,`created`,`length` FROM `%s%s` WHERE (player_id='%s' OR player_ip='%s') AND `server_ip`='%s' ORDER BY `length` ASC", g_dbPrefix, tbl_flagged, authid,ip, g_ip_port);
+		formatex(pquery, charsmax(pquery), "SELECT `fid`,`reason`,`created`,`length` FROM `%s%s` WHERE (player_id='%s' OR player_ip='%s') AND `server_ip`='%s' ORDER BY `length` ASC", g_dbPrefix, TBL_FLAGGED, authid,ip, g_ip_port);
 	
 	new data[1];
 	data[0] = id;
@@ -122,7 +122,7 @@ public _check_flagged(failstate, Handle:query, error[], errnum, data[], size)
 remove_flagged(fid)
 {
 	new pquery[1024];
-	formatex(pquery, charsmax(pquery), "DELETE FROM `%s%s` WHERE `fid`=%d", g_dbPrefix, tbl_flagged, fid);
+	formatex(pquery, charsmax(pquery), "DELETE FROM `%s%s` WHERE `fid`=%d", g_dbPrefix, TBL_FLAGGED, fid);
 	
 	SQL_ThreadQuery(g_SqlX, "_remove_flagged", pquery);
 	
